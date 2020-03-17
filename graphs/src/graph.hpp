@@ -1,11 +1,11 @@
 #include <iostream>
 #include <map>
-#include <set>
+#include <vector>
 #include <tuple>
 
 using namespace std;
 
-namespace will
+namespace rytm
 {
   class graph
   {
@@ -16,12 +16,12 @@ namespace will
 
     int get_max_node();
     int get_max_edge();
-    tuple<int*, unsigned int> get_nodes_from(int n);
-    tuple<int*, unsigned int> get_nodes_to(int n);
-    pair<int, int> get_edges();
+    vector<int> get_nodes_from(int n);
+    vector<int> get_nodes_to(int n);
+    map<int, vector<int>> get_adj_list();
 
     void add_edge(int to, int from);
-    void add_node(int n);
+    bool add_node(int n);
     void set_max_node(int n);
     //bool is_dag();
     
@@ -33,7 +33,7 @@ namespace will
   private:
     int MAX_NODES;
     int MAX_EDGES;
-    map<int, set<int>> adj_list;
+    map<int, vector<int>> adj_list;
     
 
   };
