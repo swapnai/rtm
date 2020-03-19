@@ -6,9 +6,9 @@ namespace rytm
   graph::graph(): MAX_NODES(0), MAX_EDGES(0) {}
 
   graph::graph(istream& is)
-    
   {
-    is >> MAX_NODES >> MAX_EDGES;
+    char seperator;
+    is >> MAX_NODES >> seperator >> MAX_EDGES;
     for( int i = 0; i < MAX_NODES; i++)
       {
 	adj_list[i] = vector<int>();
@@ -16,20 +16,18 @@ namespace rytm
     int from;
     int to;
     int count = 0;
-    while(is >> from)
+    while(is >> seperator)
       {
+	is >> from;
+	is >> seperator;
 	is >> to;
 	adj_list[from].push_back(to);
-	
+	count++;
       }
-    count++;
-    
-    //todo: should we infer from istream? 
     if( count != MAX_EDGES)
       {
 	//todo: swapna: make logger
 	cout << "WARN: inconsistent EDGE count!" << endl;
-	
       }
   }
   
@@ -71,10 +69,11 @@ namespace rytm
     return adj_list;
   }
 
-  void graph::add_edge(int to, int from)
+  void graph::add_edge(int from, int to)
   {
     add_node(from);
     adj_list[from].push_back(to);
+    MAX_EDGES++;
 
   }
 
@@ -88,30 +87,60 @@ namespace rytm
       }
     return false;
   }
+
+  bool graph::operator== (const graph &in_g)
+  {
+    if(MAX_NODES != in_g.MAX_NODES)
+      {
+	return false;
+      }
+    if(MAX_EDGES != in_g.MAX_EDGES)
+      {
+	return false;
+      }
+    map<int, vector<int>> in_g_adj = in_g.adj_list;
+    for(int i = 0; i < adj_list.size(); i++)
+      {
+	for(int j = 0; j < adj_list[i].size(); j++)
+	  {
+	    if(adj_list[i][j] != in_g_adj[i][j])
+	      {
+		return false;
+	      }
+	  }
+      }
+    return true;
+  }
+  
+  bool graph::set_max_node(int n)
+  {
+    if(n < MAX_NODES) return false;
+    for(int i = MAX_NODES+1; i <= n; i++)
+      {
+	adj_list[i] = vector<int>();
+      }
+    MAX_NODES = n;
+    return true;
+  }
   
   ostream& operator<< (ostream& os, const graph& g)
   {
     os << g.MAX_NODES << ',' << g.MAX_EDGES;
-    os << ',';
- 
     for( auto &to_nodes: g.adj_list)
       {
 	int from = to_nodes.first;
 	for(auto &to: to_nodes.second)
 	  {
+	    os << ',';
 	    os << from << ':' << to ;
 	  }
-	
     }
     return os;
-    
   }
-
 
   istream& operator>> (istream& is, graph& g)
   {
     char seperator;
-    
     is >> g.MAX_NODES >> seperator >> g.MAX_EDGES;
     for( int i = 0; i < g.MAX_EDGES; i++)
       {
@@ -120,9 +149,7 @@ namespace rytm
 	g.adj_list[from].push_back(to);
       }
     return is;
-    
   }
-  
 
 }
 
