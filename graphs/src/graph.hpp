@@ -34,6 +34,7 @@ namespace rytm
   private:
     int MAX_NODES;
     int MAX_EDGES;
+    // change node to any type
     map<int, vector<int>> adj_list;
 
   };
